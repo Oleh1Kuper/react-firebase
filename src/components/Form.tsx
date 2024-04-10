@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as Label from '@radix-ui/react-label';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Flex, Spinner, Text, TextField } from '@radix-ui/themes';
 import { useForm } from 'react-hook-form';
 import { ToastContainer, toast } from 'react-toastify';
@@ -23,6 +23,7 @@ const Form = () => {
   const [isLoad, setIsload] = useState(false);
 
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const isRegisterPage = pathname.includes('register');
 
   const onSubmit = async (data: FormData) => {
@@ -37,6 +38,9 @@ const Form = () => {
         toast.success(`${response.message}`, {
           position: 'top-center',
         });
+
+        localStorage.setItem('user', JSON.stringify(response.data));
+        // navigate('/');
       } else {
         toast.error(`${response.message}`, {
           position: 'top-center',

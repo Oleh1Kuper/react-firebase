@@ -7,3 +7,9 @@
     font-family: 'Montserrat', sans-serif;
   }
 }
+
+@layer components {
+  .container-page {
+    @apply flex h-screen items-center justify-center bg-[#171717];
+  }
+}
