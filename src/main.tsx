@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { Theme } from '@radix-ui/themes';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
+import 'react-toastify/dist/ReactToastify.css';
 import '@radix-ui/themes/styles.css';
 import './index.css';
 
