@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PageTitle from '../../../components/PageTitle';
-import { Box, Button, Tabs } from '@radix-ui/themes';
+import { Box, Button, Flex, Tabs } from '@radix-ui/themes';
 import PersonalInfo from './PersonalInfo';
 import Education from './Education';
 import Experience from './Experience';
@@ -12,7 +12,6 @@ import {
 import { UserProfile } from 'firebase/auth';
 import { toast } from 'react-toastify';
 import Spinner from '../../../components/Spinner';
-import { Flex } from 'antd';
 
 const Profile = () => {
   const [isLoad, setIsload] = useState(false);
@@ -81,7 +80,7 @@ const Profile = () => {
                 <Experience />
               </Tabs.Content>
 
-              <Flex gap={10}>
+              <Flex gap="3">
                 <Button
                   size="3"
                   radius="none"
