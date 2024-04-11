@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import * as Label from '@radix-ui/react-label';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Flex, Spinner, Text, TextField } from '@radix-ui/themes';
+import { Button, Flex, Text, TextField } from '@radix-ui/themes';
 import { useForm } from 'react-hook-form';
 import { ToastContainer, toast } from 'react-toastify';
 import { loginUser, registerUser } from '../services/authentication';
+import Spinner from './Spinner';
 
 export type FormData = {
   name?: string;
@@ -40,7 +41,7 @@ const Form = () => {
         });
 
         localStorage.setItem('user', JSON.stringify(response.data));
-        // navigate('/');
+        navigate('/');
       } else {
         toast.error(`${response.message}`, {
           position: 'top-center',
@@ -59,7 +60,7 @@ const Form = () => {
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex gap="2" direction="column">
           {isRegisterPage && (
@@ -133,10 +134,9 @@ const Form = () => {
             radius="none"
             className="mt-2 cursor-pointer bg-[#171717] uppercase"
             type="submit"
-            loading={isLoad}
             disabled={isLoad}
           >
-            {isRegisterPage ? 'Register' : 'Login'}
+            {!isLoad && (isRegisterPage ? 'Register' : 'Login')}
             {isLoad && <Spinner />}
           </Button>
 
