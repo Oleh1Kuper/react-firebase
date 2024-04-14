@@ -1,10 +1,32 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Box, Button, Grid } from '@radix-ui/themes';
+import { DocumentData } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import CardJob from '../components/CardJob';
+import { getAllJobs } from '../services/jobs';
 
 const HomePage = () => {
   const user = JSON.parse(localStorage.getItem('user')!);
-  // const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [data, setData] = useState<DocumentData[] | null>(null);
+
+  const getData = async () => {
+    try {
+      const response = await getAllJobs();
+
+      console.log(response.data);
+
+      const approvedJobs = response.data?.filter(
+        (item) => item.status === 'aproved',
+      );
+
+      setData(approvedJobs || null);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -13,42 +35,30 @@ const HomePage = () => {
   }, []);
 
   return (
-    // <Flex className="gap-2 sm:gap-5" p={{ initial: '2', sm: '4' }}>
-    //   <Flex
-    //     align="center"
-    //     justify="center"
-    //     className="height-full rounded-md bg-[#171717] p-2 text-white"
-    //   >
-    //     <ul className="flex flex-col gap-5">
-    //       {userMenuList.map(({ title, path, icon }) => (
-    //         <li
-    //           key={title}
-    //           className={`rounded-md p-2 ${pathname === path && 'bg-[#3c3c3c]'}`}
-    //         >
-    //           <Link className="flex items-center gap-2" to={path}>
-    //             {icon}
-    //             <span className="hidden md:block">{title}</span>
-    //           </Link>
-    //         </li>
-    //       ))}
-    //     </ul>
-    //   </Flex>
+    <Grid gap="4" columns="6">
+      {data?.map((job) => (
+        <Box
+          key={job.id}
+          className="col-span-6 border border-gray-300 p-2 md:col-span-3 lg:col-span-2"
+        >
+          <CardJob job={job} />
 
-    //   <Flex direction="column" className="flex-1 gap-2 sm:gap-5">
-    //     <Flex
-    //       justify="between"
-    //       className="rounded-md bg-[#171717] p-4 text-white"
-    //     >
-    //       <Text size="7">Job platform</Text>
-    //       <Flex gap="2" align="center">
-    //         {user.name}
-    //         <FaUserCircle />
-    //       </Flex>
-    //     </Flex>
-    //     <Box className="rounded-md border border-gray-300 p-4">{<Outlet />}</Box>
-    //   </Flex>
-    // </Flex>
-    <h1>home</h1>
+          <Link to={`/job-description/${job.id}`}>
+            <Button
+              size="3"
+              radius="none"
+              className="mt-4 w-full cursor-pointer uppercase"
+              type="button"
+              color="gray"
+              variant="outline"
+              highContrast
+            >
+              Apply Now
+            </Button>
+          </Link>
+        </Box>
+      ))}
+    </Grid>
   );
 };
 

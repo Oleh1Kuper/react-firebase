@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import PageTitle from '../../../components/PageTitle';
-import { Box, Flex, Button, Grid } from '@radix-ui/themes';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import React from 'react';
+import { Box, Button, Flex, Grid } from '@radix-ui/themes';
 import { Form, Input, Select } from 'antd';
-import {
-  industryOptions,
-  jobOptions,
-  locationOptions,
-} from '../../../constants';
-import Spinner from '../../../components/Spinner';
-import { JobType } from '../../../types/jobType';
-import {
-  addNewJobPost,
-  editJobDetails,
-  getJobById,
-} from '../../../services/jobs';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { DocumentData } from 'firebase/firestore';
+import PageTitle from '../components/PageTitle';
+import Spinner from '../components/Spinner';
+import { industryOptions, jobOptions, locationOptions } from '../constants';
+import useSingleJob from '../hooks/useSingleJob';
+import { addNewJobPost, editJobDetails } from '../services/jobs';
+import { JobType } from '../types/jobType';
 
 const EditJob = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [jobData, setJobData] = useState<DocumentData | null>(null);
-  const [isLoad, setIsload] = useState(false);
+  const { jobData, isLoad, setIsload } = useSingleJob(id!);
 
   const onFinish = async (data: JobType) => {
     setIsload(true);
@@ -43,24 +34,6 @@ const EditJob = () => {
       setIsload(false);
     }
   };
-
-  const fetchJobData = async () => {
-    try {
-      const response = await getJobById(id!);
-
-      if (response.success) {
-        setJobData(response.data);
-      }
-    } catch (error) {
-      toast.error(`${error}`, { position: 'top-center' });
-    }
-  };
-
-  useEffect(() => {
-    if (id) {
-      fetchJobData();
-    }
-  }, []);
 
   return (
     <Box>

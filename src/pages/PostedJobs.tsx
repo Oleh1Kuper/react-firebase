@@ -2,17 +2,27 @@ import { BiEditAlt } from 'react-icons/bi';
 import { MdDeleteOutline } from 'react-icons/md';
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Flex } from '@radix-ui/themes';
-import PageTitle from '../../../components/PageTitle';
+import PageTitle from '../components/PageTitle';
 import { Link } from 'react-router-dom';
-import { deleteJobById, getPostedJobsByUserId } from '../../../services/jobs';
+import {
+  deleteJobById,
+  getApplicationsById,
+  getPostedJobsByUserId,
+} from '../services/jobs';
 import { toast } from 'react-toastify';
 import { Table } from 'antd';
 import { DocumentData } from 'firebase/firestore';
-import Spinner from '../../../components/Spinner';
+import Spinner from '../components/Spinner';
+import AppliedCandidates from './AppliedCandidates';
+import { postedJobsColumns } from '../constants';
 
 const PostedJobs = () => {
   const [jobs, setJobs] = useState<DocumentData[] | null>(null);
   const [isLoad, setIsload] = useState(false);
+  const [showAppliedCandidates, setShowAppliedCandidates] = useState(false);
+  const [appiledCandidates, setAppiledCandidates] = useState<
+    DocumentData[] | null
+  >(null);
 
   const getJobs = async () => {
     const user = JSON.parse(localStorage.getItem('user')!);
@@ -45,47 +55,51 @@ const PostedJobs = () => {
     }
   };
 
+  const getAppliedCandidates = (id: string) => async () => {
+    try {
+      const response = await getApplicationsById('jobId', id);
+
+      if (response.success) {
+        setAppiledCandidates(response.data);
+
+        if (!showAppliedCandidates) {
+          setShowAppliedCandidates(true);
+        }
+      }
+    } catch (error) {
+      toast.error(`${error}`, { position: 'top-center' });
+    }
+  };
+
   useEffect(() => {
     getJobs();
   }, []);
 
   const columns = [
-    {
-      title: 'Title',
-      dataIndex: 'title',
-      key: 'title',
-    },
-    {
-      title: 'Company',
-      dataIndex: 'company',
-      key: 'company',
-    },
-    {
-      title: 'Posted On',
-      dataIndex: 'postedOn',
-      key: 'postedOn',
-    },
-    {
-      title: 'Last Date to Apply',
-      dataIndex: 'lastDateToApply',
-      key: 'lastDateToApply',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-    },
+    ...postedJobsColumns,
     {
       title: 'Action',
       dataIndex: 'action',
       key: 'action',
-      render: (_, record: DocumentData) => (
-        <Flex gap="4">
+      render: (_: any, record: DocumentData) => (
+        <Flex gap="4" align="center">
+          <Button
+            variant="outline"
+            color="gray"
+            highContrast
+            radius="none"
+            className="cursor-pointer"
+            onClick={getAppliedCandidates(record.id)}
+          >
+            Candidates
+          </Button>
+
           <MdDeleteOutline
             onClick={removeJob(record.id)}
             className="cursor-pointer"
             size={20}
           />
+
           <Link to={`/posted-jobs/edit/${record.id}`}>
             <BiEditAlt className="cursor-pointer" size={20} />
           </Link>
@@ -122,7 +136,17 @@ const PostedJobs = () => {
         <Table
           columns={columns}
           rowKey="id"
+          pagination={false}
           dataSource={jobs}
+        />
+      )}
+
+      {showAppliedCandidates && (
+        <AppliedCandidates
+          showAppliedCandidates={showAppliedCandidates}
+          setShowAppliedCandidates={setShowAppliedCandidates}
+          appiledCandidates={appiledCandidates}
+          reloadData={getAppliedCandidates}
         />
       )}
     </Box>

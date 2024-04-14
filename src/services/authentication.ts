@@ -1,4 +1,10 @@
-import { addDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore';
 import { fireDB } from '../firebaseConfig';
 import { FormData } from '../components/Form';
 import CryptoJs from 'crypto-js';
